@@ -1,0 +1,13 @@
+const express = require("express");
+const r = express.Router();
+const { triggerSOS, updateLocation, cancelSOS, resolveSOS, getActiveSOS, getSOSHistory } = require("../controllers/sosController");
+const { protect }    = require("../middleware/authMiddleware");
+const { sosLimiter } = require("../middleware/rateLimiter");
+r.use(protect);
+r.post("/trigger",                sosLimiter, triggerSOS);
+r.post("/:sosId/location",                   updateLocation);
+r.patch("/:sosId/cancel",                    cancelSOS);
+r.patch("/:sosId/resolve",                   resolveSOS);
+r.get("/active",                             getActiveSOS);
+r.get("/history",                            getSOSHistory);
+module.exports = r;

@@ -1,0 +1,11 @@
+# Ignore dependency folders inside both projects
+shieldher-backend/node_modules/
+shieldher-frontend/node_modules/
+
+# Ignore local environment files (secret credentials)
+shieldher-backend/.env
+shieldher-frontend/.env
+
+# Ignore build/dist production folders
+shieldher-frontend/dist/
+shieldher-frontend/build/

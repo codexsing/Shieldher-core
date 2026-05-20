@@ -1,0 +1,10 @@
+const express = require("express");
+const r = express.Router();
+const { reportZone, getHeatmap, getNearby, upvoteZone } = require("../controllers/allControllers");
+const { protect } = require("../middleware/authMiddleware");
+r.get("/",              getHeatmap);
+r.get("/nearby",        getNearby);
+r.use(protect);
+r.post("/report",       reportZone);
+r.patch("/:id/upvote",  upvoteZone);
+module.exports = r;

@@ -1,0 +1,10 @@
+const express = require("express");
+const r = express.Router();
+const { getDashboardStats, getAllUsers, getAllSOS, resolveSOSAdmin } = require("../controllers/allControllers");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
+r.use(protect, adminOnly);
+r.get("/dashboard",              getDashboardStats);
+r.get("/users",                  getAllUsers);
+r.get("/sos",                    getAllSOS);
+r.patch("/sos/:sosId/resolve",   resolveSOSAdmin);
+module.exports = r;

@@ -1,0 +1,10 @@
+const express = require("express");
+const r = express.Router();
+const { uploadEvidence, getMyEvidence, deleteEvidence } = require("../controllers/allControllers");
+const { protect } = require("../middleware/authMiddleware");
+const upload = require("../middleware/uploadMiddleware");
+r.use(protect);
+r.post("/upload",   upload.single("file"), uploadEvidence);
+r.get("/",                                 getMyEvidence);
+r.delete("/:id",                           deleteEvidence);
+module.exports = r;
