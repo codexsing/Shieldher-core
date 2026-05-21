@@ -2,7 +2,7 @@ require("dotenv").config();
 const http = require("http");
 const app  = require("./app");
 const connectDB  = require("./config/db");
-
+app.set("trust proxy", 1);
 // ⚠️ Inka use sahi se karna hoga niche
 const { initSocket } = require("./config/socket");
 const registerSocketEvents = require("./sockets/index");

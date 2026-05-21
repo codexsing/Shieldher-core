@@ -6,8 +6,19 @@ const logger      = require("../utils/logger");
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT),
+
   secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+
+  family: 4,
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
 /**
@@ -29,7 +40,11 @@ const sendSOSAlerts = async ({ contacts, userName, lat, lng, sosId }) => {
       }),
       (async () => {
         const { subject, html } = sosAlertEmail({ guardianName: name, userName, lat, lng, sosId });
-        await transporter.sendMail({ from: process.env.EMAIL_FROM, to: email, subject, html });
+        try {
+  await transporter.sendMail(mailOptions);
+} catch (err) {
+  console.log("MAIL ERROR:", err);
+}
       })(),
     ])
   );
@@ -58,7 +73,11 @@ const sendMissedCheckinAlerts = async ({ contacts, userName, journeyId, lastLat,
         lastLng,
       });
 
-      await transporter.sendMail({ from: process.env.EMAIL_FROM, to: email, subject, html });
+      try {
+  await transporter.sendMail(mailOptions);
+} catch (err) {
+  console.log("MAIL ERROR:", err);
+}
 
       await twilioClient.messages.create({
         // ✅ locationUrl use karo

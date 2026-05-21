@@ -13,8 +13,12 @@ const app = express();
 app.use(helmet());
 
 // ── CORS ──────────────────────────────────────
+// ── CORS ──────────────────────────────────────
 app.use(cors({
-  origin:      process.env.CLIENT_URL || "http://localhost:5173",
+  origin: [
+    "http://localhost:5173", 
+    "https://shieldher-core.vercel.app" // 👈 Yahan bina extra slash (/) ke copy-paste kar do
+  ],
   credentials: true,
   methods:     ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

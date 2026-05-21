@@ -3,12 +3,22 @@ const nodemailer = require("nodemailer");
 const { Otp }    = require("../models/SafeZoneOtp");
 const { otpEmail } = require("../utils/emailTemplates");
 const logger     = require("../utils/logger");
-
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT),
+
   secure: false,
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS },
+
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+
+  family: 4,
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
 const generateOtp = () => crypto.randomInt(100000, 999999).toString();
@@ -22,7 +32,11 @@ const sendOtp = async (email, name) => {
   await Otp.create({ email, otp, expiresAt });
 
   const { subject, html } = otpEmail({ name, otp });
-  await transporter.sendMail({ from: process.env.EMAIL_FROM, to: email, subject, html });
+ try {
+  await transporter.sendMail(mailOptions);
+} catch (err) {
+  console.log("MAIL ERROR:", err);
+}
   logger.info(`OTP sent to ${email}`);
 };
 
