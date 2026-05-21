@@ -1,12 +1,14 @@
 // src/services/api.js
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+// ── Base URL Configuration ────────────────────────────────────────────────
+// Agar environment variable nahi milega, toh automatic live Render backend par hit karega
+const BASE_URL = import.meta.env.VITE_API_URL || "https://shieldher-backend-8bl2.onrender.com/api";
 
 const api = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
-  timeout: 10000,
+  timeout: 30000, // Render free tier ke cold start ko handle karne ke liye 30s diya hai
 });
 
 // ── Request interceptor: attach access token ──────────────────────────────
