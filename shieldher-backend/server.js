@@ -31,12 +31,7 @@ const bootstrap = async () => {
   // 4. Server Start karein
   server.listen(PORT, () => {
     logger.info(`
-    ╔═══════════════════════════════════════╗
-    ║   🛡️  ShieldHer Backend Running       ║
-    ║   Port     : ${PORT}                  ║
-    ║   Env      : ${process.env.NODE_ENV || "development"}             ║
-    ║   Socket.io: Initialized Properly 💥  ║
-    ╚═══════════════════════════════════════╝
+  backend running
     `);
   });
 };
