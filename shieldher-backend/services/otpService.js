@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const { Otp } = require("../models/SafeZoneOtp");
 const { otpEmail } = require("../utils/emailTemplates");
 const logger = require("../utils/logger");
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: Number(process.env.EMAIL_PORT),
@@ -11,6 +12,14 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  }
+});
+
+transporter.verify((err, success) => {
+  if (err) {
+    console.log("SMTP ERROR:", err);
+  } else {
+    console.log("SMTP READY");
   }
 });
 
@@ -55,4 +64,43 @@ const sendOtp = async (email, name) => {
   }
 };
 
-module.exports = { sendOtp };
+const verifyOtp = async (email, otp) => {
+  const record = await Otp.findOne({
+    email,
+    used: false
+  });
+
+  if (!record) {
+    return {
+      valid: false,
+      message: "No OTP found"
+    };
+  }
+
+  if (new Date() > record.expiresAt) {
+    return {
+      valid: false,
+      message: "OTP expired"
+    };
+  }
+
+  if (record.otp !== otp) {
+    return {
+      valid: false,
+      message: "Incorrect OTP"
+    };
+  }
+
+  record.used = true;
+
+  await record.save();
+
+  return {
+    valid: true
+  };
+};
+
+module.exports = {
+  sendOtp,
+  verifyOtp
+};
