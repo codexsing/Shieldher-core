@@ -1,10 +1,27 @@
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const dns = require("dns");
+
 const { Otp } = require("../models/SafeZoneOtp");
 const { otpEmail } = require("../utils/emailTemplates");
 const logger = require("../utils/logger");
 
+console.log("================================");
 console.log("OTP SERVICE LOADED");
+console.log("================================");
+
+console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
+console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
+console.log("EMAIL_USER =", process.env.EMAIL_USER);
+console.log("EMAIL_PASS EXISTS =", !!process.env.EMAIL_PASS);
+
+dns.lookup("smtp-relay.brevo.com", (err, address) => {
+  console.log("================================");
+  console.log("DNS RESULT");
+  console.log("ERROR =", err);
+  console.log("ADDRESS =", address);
+  console.log("================================");
+});
 
 const transporter = nodemailer.createTransport({
   host: "smtp-relay.brevo.com",
@@ -21,14 +38,25 @@ const transporter = nodemailer.createTransport({
   logger: true,
   debug: true
 });
-transporter.verify((err, success) => {
-  if (err) {
-    console.log("SMTP ERROR:", err);
-  } else {
-    console.log("SMTP READY");
-  }
-});
 
+(async () => {
+  try {
+    console.log("================================");
+    console.log("CHECKING SMTP CONNECTION...");
+    console.log("================================");
+
+    await transporter.verify();
+
+    console.log("================================");
+    console.log("SMTP READY");
+    console.log("================================");
+  } catch (err) {
+    console.log("================================");
+    console.log("SMTP VERIFY FAILED");
+    console.log(err);
+    console.log("================================");
+  }
+})();
 const generateOtp = () =>
   crypto.randomInt(100000, 999999).toString();
 
