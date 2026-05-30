@@ -9,21 +9,41 @@ const { generateAccessToken, generateRefreshToken, verifyRefreshToken } = requir
 const { sendOtp, verifyOtp } = require("../services/otpService");
 
 // POST /api/auth/register
+// POST /api/auth/register
 exports.register = asyncHandler(async (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  const exists = await User.findOne({ $or: [{ email }, { phone }] });
+  const exists = await User.findOne({
+    $or: [{ email }, { phone }]
+  });
+
   if (exists) {
-    return ApiResponse.error(res, { message: "Email or phone already registered.", statusCode: 409 });
+    return ApiResponse.error(res, {
+      message: "Email or phone already registered.",
+      statusCode: 409
+    });
   }
 
-  const user = await User.create({ name, email, phone, password });
-  await sendOtp(email, name);
+  const user = await User.create({
+    name,
+    email,
+    phone,
+    password
+  });
+
+  try {
+    await sendOtp(email, name);
+  } catch (err) {
+    console.error("OTP SEND FAILED:", err);
+  }
 
   return ApiResponse.success(res, {
     statusCode: 201,
-    message: "Registration successful. Please verify your email with the OTP sent.",
-    data: { userId: user._id, email: user.email },
+    message: "Registration successful.",
+    data: {
+      userId: user._id,
+      email: user.email
+    }
   });
 });
 
