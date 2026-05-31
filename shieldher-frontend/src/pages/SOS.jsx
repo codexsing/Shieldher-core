@@ -4,9 +4,10 @@ import { useAuth } from "../context/AuthContext";
 import BottomNav from "../components/BottomNav";
 import { PageWrapper } from "../components/UI";
  
+const API = import.meta.env.VITE_API_URL;
 const api = async (method, path, body) => {
   const token = localStorage.getItem("accessToken");
-  const res = await fetch(`/api${path}`, {
+const res = await fetch(`${API}${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
