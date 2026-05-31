@@ -115,7 +115,7 @@ const captureEvidence = async (
       );
 
     const res = await fetch(
-      "/api/evidence/upload",
+      `${API}/evidence/upload`,
       {
         method: "POST",
 
