@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8000;
 
 // ── Create HTTP server from Express app ──────
 const server = http.createServer(app);
-
+console.log("BREVO KEY EXISTS =", !!process.env.BREVO_API_KEY);
 // ── Bootstrap ────────────────────────────────
 const bootstrap = async () => {
   // 1. Database and Cron Jobs connect karein

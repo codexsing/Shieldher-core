@@ -1,62 +1,18 @@
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const dns = require("dns");
-
+const SibApiV3Sdk = require("sib-api-v3-sdk");
 const { Otp } = require("../models/SafeZoneOtp");
 const { otpEmail } = require("../utils/emailTemplates");
 const logger = require("../utils/logger");
 
-console.log("================================");
-console.log("OTP SERVICE LOADED");
-console.log("================================");
+const client = SibApiV3Sdk.ApiClient.instance;
 
-console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
-console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
-console.log("EMAIL_USER =", process.env.EMAIL_USER);
-console.log("EMAIL_PASS EXISTS =", !!process.env.EMAIL_PASS);
+client.authentications["api-key"].apiKey =
+  process.env.BREVO_API_KEY;
 
-dns.lookup("smtp-relay.brevo.com", (err, address) => {
-  console.log("================================");
-  console.log("DNS RESULT");
-  console.log("ERROR =", err);
-  console.log("ADDRESS =", address);
-  console.log("================================");
-});
+const apiInstance =
+  new SibApiV3Sdk.TransactionalEmailsApi();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-  logger: true,
-  debug: true
-});
-
-(async () => {
-  try {
-    console.log("================================");
-    console.log("CHECKING SMTP CONNECTION...");
-    console.log("================================");
-
-    await transporter.verify();
-
-    console.log("================================");
-    console.log("SMTP READY");
-    console.log("================================");
-  } catch (err) {
-    console.log("================================");
-    console.log("SMTP VERIFY FAILED");
-    console.log(err);
-    console.log("================================");
-  }
-})();
+console.log("BREVO API INITIALIZED");
 const generateOtp = () =>
   crypto.randomInt(100000, 999999).toString();
 
@@ -86,20 +42,25 @@ const sendOtp = async (email, name) => {
     otp
   });
 
-  const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-    to: email,
-    subject,
-    html
-  };
+
 
   try {
     console.log("BEFORE SENDMAIL");
+await apiInstance.sendTransacEmail({
+  sender: {
+    email: "st7879singh@gmail.com",
+    name: "ShieldHer"
+  },
+  to: [
+    {
+      email
+    }
+  ],
+  subject,
+  htmlContent: html
+});
 
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("AFTER SENDMAIL");
-    console.log("MAIL SENT:", info.response);
+console.log("MAIL SENT USING BREVO API");
 
     logger.info(`OTP sent to ${email}`);
 
