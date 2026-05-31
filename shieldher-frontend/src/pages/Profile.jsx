@@ -6,9 +6,12 @@ import BottomNav from "../components/BottomNav";
 import { PageWrapper, AlertBanner } from "../components/UI";
 
 // ─── API helper (uses your existing auth token from context/localStorage) ────
+const API = import.meta.env.VITE_API_URL;
+
 const api = async (method, path, body) => {
-  const token = localStorage.getItem("accessToken"); // adjust key if needed
-  const res = await fetch(`/api${path}`, {
+  const token = localStorage.getItem("accessToken");
+
+  const res = await fetch(`${API}${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",
